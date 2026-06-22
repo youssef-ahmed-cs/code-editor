@@ -16,7 +16,21 @@ class VerifyEmailController extends Controller
             'email' => 'required|email|exists:users,email',
         ]);
 
+        // if(auth()->user()->hasVerifiedEmail()) {
+        //     return response()->json([
+        //         'message' => 'Your email is already verified.'
+        //     ], 422);
+        // }
+
         $email = $request->email;
+
+        $user = User::where('email', $email)->first();
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Your email is already verified.'
+            ], 422);
+        }
 
         // 1. Generate a secure 6-digit random code
         $otp = random_int(100000, 999999);
