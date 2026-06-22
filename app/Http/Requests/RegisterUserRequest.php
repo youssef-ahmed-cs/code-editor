@@ -13,6 +13,7 @@ class RegisterUserRequest extends FormRequest
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => ['required', Password::defaults(),'confirmed'],
+            'username' => 'nullable|string|unique:users',
         ];
     }
 

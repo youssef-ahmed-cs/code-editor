@@ -16,12 +16,6 @@ class VerifyEmailController extends Controller
             'email' => 'required|email|exists:users,email',
         ]);
 
-        // if(auth()->user()->hasVerifiedEmail()) {
-        //     return response()->json([
-        //         'message' => 'Your email is already verified.'
-        //     ], 422);
-        // }
-
         $email = $request->email;
 
         $user = User::where('email', $email)->first();
@@ -35,8 +29,8 @@ class VerifyEmailController extends Controller
         // 1. Generate a secure 6-digit random code
         $otp = random_int(100000, 999999);
 
-        // 2. Cache the OTP securely bound to the user's email for 2 minutes
-        Cache::put('otp_' . $email, $otp, now()->addMinutes(2));
+        // 2. Cache the OTP securely bound to the user's email for 10 minutes
+        Cache::put('otp_' . $email, $otp, now()->addMinutes(10));
 
         // 3. Retrieve user and fire notification
         $user = User::where('email', $email)->first();

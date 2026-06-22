@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Str;
 class UserAuthController extends Controller 
 {
     public function register(RegisterUserRequest $request)
@@ -21,10 +19,10 @@ class UserAuthController extends Controller
             'name' => $registerUserData['name'],
             'email' => $registerUserData['email'],
             'password' => Hash::make($registerUserData['password']),
+            'username' => $registerUserData['username'] ?? Str::before('@', $registerUserData['email']).Str::random(5),
         ]);
 
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
-        // event(new Registered($user));
         Log::info('User registered: ' . $user->email);
 
         return response()->json([
@@ -58,6 +56,7 @@ class UserAuthController extends Controller
     public function logout()
     {
         auth()->user()->tokens()->delete();
+        Log::info('User logged out: ' . auth()->user()->email);
 
         return response()->json([
             "message" => "logged out successfully!"
@@ -71,6 +70,7 @@ class UserAuthController extends Controller
                 "message" => "User not found"
             ]);
         }
+
         return response()->json([
             "user" => new UserResource(auth()->user()),
         ]);
@@ -80,7 +80,9 @@ class UserAuthController extends Controller
     {
         $user = auth()->user();
         $user->currentAccessToken()->delete();
+
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+
         return response()->json([
             'access_token' => $token,
         ]);

@@ -4,6 +4,7 @@ use App\Http\Controllers\V1\Auth\UserAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\VerifyEmailController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
+use App\Http\Controllers\ProfileController;
 
 Route::prefix('v1')->middleware('throttle:20,1')->group(function () {
 
@@ -21,9 +22,15 @@ Route::prefix('v1')->middleware('throttle:20,1')->group(function () {
     Route::post('register', [UserAuthController::class, 'register']);
     Route::post('login', [UserAuthController::class, 'login']);
 
-    Route::middleware(['auth:sanctum','verified'])->controller(UserAuthController::class)->group(function () {
-        Route::post('/logout', 'logout');
-        Route::get('/me', 'user');
-        Route::post('/refresh', 'refreshToken');
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+        Route::controller(UserAuthController::class)->group(function () {
+            Route::post('/logout', 'logout');
+            Route::get('/me', 'user');
+            Route::post('/refresh', 'refreshToken');
+        });
+
+        Route::controller(ProfileController::class)->group(function () {
+            Route::post('upload-avatar', 'uploadAvatarImage');
+        });
     });
 });
