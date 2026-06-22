@@ -21,9 +21,9 @@ Route::prefix('v1')->middleware('throttle:20,1')->group(function () {
     Route::post('register', [UserAuthController::class, 'register']);
     Route::post('login', [UserAuthController::class, 'login']);
 
-    Route::middleware(['auth:sanctum'])->controller(UserAuthController::class)->group(function () {
+    Route::middleware(['auth:sanctum','verified'])->controller(UserAuthController::class)->group(function () {
         Route::post('/logout', 'logout');
-        Route::get('/user', 'user');
+        Route::get('/me', 'user');
         Route::post('/refresh', 'refreshToken');
     });
 });

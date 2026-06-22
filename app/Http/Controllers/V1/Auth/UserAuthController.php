@@ -28,7 +28,7 @@ class UserAuthController extends Controller
         Log::info('User registered: ' . $user->email);
 
         return response()->json([
-            'message' => 'User Created ',
+            'message' => 'User Created Successfully!',
             'user' => new UserResource($user),
             'access_token' => $token,
         ]);
@@ -50,6 +50,7 @@ class UserAuthController extends Controller
 
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
         return response()->json([
+            'user' => new UserResource($user),
             'access_token' => $token,
         ]);
     }
@@ -59,7 +60,7 @@ class UserAuthController extends Controller
         auth()->user()->tokens()->delete();
 
         return response()->json([
-            "message" => "logged out"
+            "message" => "logged out successfully!"
         ]);
     }
 
