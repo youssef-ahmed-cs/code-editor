@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class UserAuthController extends Controller
+class UserAuthController extends Controller 
 {
     public function register(RegisterUserRequest $request)
     {
@@ -23,7 +24,7 @@ class UserAuthController extends Controller
         ]);
 
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
-        event(new Registered($user));
+        // event(new Registered($user));
         Log::info('User registered: ' . $user->email);
 
         return response()->json([
